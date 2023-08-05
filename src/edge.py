@@ -258,13 +258,9 @@ def _single_tensor_edge(
         # update stepsizes with step size updates
         step_size.mul_(sign).clamp_(step_size_min, step_size_max)
 
-        # for dir<0, dfdx=0 --> note: removed in edge
-        # for dir>=0 dfdx=dfdx
-        grad = grad.clone(memory_format=torch.preserve_format)
-
         # update parameters
-        # note: we are moving in the amount of grad time step_size unlike Rprop which only
-        # moves in the amount of step_size
+        # note: multiplying by the gradient times step size rather than just step size in edge
+        #       also, we don't zero out the step size if direction changes as in rprop.
         param.addcmul_(grad, step_size, value=-1)
         prev.copy_(grad)
 
@@ -322,16 +318,9 @@ def _multi_tensor_edge(
         for step_size in grouped_step_sizes:
             step_size.clamp_(step_size_min, step_size_max)
 
-        # for dir<0, dfdx=0 ---> NOTE: removed in edge
-        # for dir>=0 dfdx=dfdx
-        # grouped_grads = list(grouped_grads)
-        # for i in range(len(grouped_grads)):
-        #    grouped_grads[i] = grouped_grads[i].clone(
-        #        memory_format=torch.preserve_format
-        #    )
-
         # update parameters
         # note: multiplying by the gradient times step size rather than just step size in edge
+        #       also, we don't zero out the step size if direction changes as in rprop.
         torch._foreach_addcmul_(
             grouped_params, grouped_grads, grouped_step_sizes, value=-1
         )
