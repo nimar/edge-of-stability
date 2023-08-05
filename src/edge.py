@@ -264,7 +264,9 @@ def _single_tensor_edge(
         grad[sign.eq(etaminus)] = 0
 
         # update parameters
-        param.addcmul_(grad.sign(), step_size, value=-1)
+        # note: we are moving in the amount of grad time step_size unlike Rprop which only
+        # moves in the amount of step_size
+        param.addcmul_(grad, step_size, value=-1)
         prev.copy_(grad)
 
 
