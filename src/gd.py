@@ -151,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--opt",
         type=str,
-        choices=["gd", "polyak", "nesterov", "rprop"],
+        choices=["gd", "polyak", "nesterov", "rprop", "edge"],
         help="which optimization algorithm to use",
         default="gd",
     )

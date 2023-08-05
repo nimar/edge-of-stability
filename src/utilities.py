@@ -11,6 +11,8 @@ from torch.optim.optimizer import Optimizer
 from torch.utils.data import Dataset, DataLoader
 import os
 
+from edge import Edge
+
 # the default value for "physical batch size", which is the largest batch size that we try to put on the GPU
 DEFAULT_PHYS_BS = 1000
 
@@ -27,7 +29,7 @@ def get_gd_directory(
     """Return the directory in which the results should be saved."""
     results_dir = os.environ["RESULTS"]
     directory = f"{results_dir}/{dataset}/{arch_id}/seed_{seed}/{loss}/{opt}/"
-    if opt in ["gd", "rprop"]:
+    if opt in ["gd", "rprop", "edge"]:
         return f"{directory}/lr_{lr}"
     elif opt == "polyak" or opt == "nesterov":
         return f"{directory}/lr_{lr}_beta_{beta}"
@@ -56,6 +58,8 @@ def get_gd_optimizer(parameters, opt: str, lr: float, momentum: float) -> Optimi
         return SGD(parameters, lr=lr, momentum=momentum, nesterov=True)
     elif opt == "rprop":
         return Rprop(parameters, lr=lr)
+    elif opt == "edge":
+        return Edge(parameters, lr=lr)
     else:
         raise ValueError(f"Unknown optimizer {opt}")
 
