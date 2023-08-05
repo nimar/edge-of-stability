@@ -258,10 +258,9 @@ def _single_tensor_edge(
         # update stepsizes with step size updates
         step_size.mul_(sign).clamp_(step_size_min, step_size_max)
 
-        # for dir<0, dfdx=0
+        # for dir<0, dfdx=0 --> note: removed in edge
         # for dir>=0 dfdx=dfdx
         grad = grad.clone(memory_format=torch.preserve_format)
-        grad[sign.eq(etaminus)] = 0
 
         # update parameters
         # note: we are moving in the amount of grad time step_size unlike Rprop which only
@@ -325,11 +324,11 @@ def _multi_tensor_edge(
 
         # for dir<0, dfdx=0 ---> NOTE: removed in edge
         # for dir>=0 dfdx=dfdx
-        grouped_grads = list(grouped_grads)
-        for i in range(len(grouped_grads)):
-            grouped_grads[i] = grouped_grads[i].clone(
-                memory_format=torch.preserve_format
-            )
+        # grouped_grads = list(grouped_grads)
+        # for i in range(len(grouped_grads)):
+        #    grouped_grads[i] = grouped_grads[i].clone(
+        #        memory_format=torch.preserve_format
+        #    )
 
         # update parameters
         # note: multiplying by the gradient times step size rather than just step size in edge
