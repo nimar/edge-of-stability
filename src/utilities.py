@@ -6,7 +6,7 @@ import torch.nn as nn
 from scipy.sparse.linalg import LinearOperator, eigsh
 from torch import Tensor
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
-from torch.optim import SGD
+from torch.optim import SGD, RProp
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import Dataset, DataLoader
 import os
@@ -44,6 +44,8 @@ def get_gd_optimizer(parameters, opt: str, lr: float, momentum: float) -> Optimi
         return SGD(parameters, lr=lr, momentum=momentum, nesterov=False)
     elif opt == "nesterov":
         return SGD(parameters, lr=lr, momentum=momentum, nesterov=True)
+    elif opt == "rprop":
+        return RProp(parameters, lr=lr)
 
 
 def save_files(directory: str, arrays: List[Tuple[str, torch.Tensor]]):
