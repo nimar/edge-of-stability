@@ -323,19 +323,18 @@ def _multi_tensor_edge(
         for step_size in grouped_step_sizes:
             step_size.clamp_(step_size_min, step_size_max)
 
-        # for dir<0, dfdx=0
+        # for dir<0, dfdx=0 ---> NOTE: removed in edge
         # for dir>=0 dfdx=dfdx
         grouped_grads = list(grouped_grads)
         for i in range(len(grouped_grads)):
             grouped_grads[i] = grouped_grads[i].clone(
                 memory_format=torch.preserve_format
             )
-            grouped_grads[i][signs[i].eq(etaminus)] = 0
 
         # update parameters
-        grad_signs = [grad.sign() for grad in grouped_grads]
+        # note: multiplying by the gradient times step size rather than just step size in edge
         torch._foreach_addcmul_(
-            grouped_params, grad_signs, grouped_step_sizes, value=-1
+            grouped_params, grouped_grads, grouped_step_sizes, value=-1
         )
 
         for i in range(len(grouped_prevs)):
