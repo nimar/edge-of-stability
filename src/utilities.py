@@ -6,7 +6,7 @@ import torch.nn as nn
 from scipy.sparse.linalg import LinearOperator, eigsh
 from torch import Tensor
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
-from torch.optim import SGD, Rprop, Adam
+from torch.optim import SGD, Rprop, Adam, RMSprop
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import Dataset, DataLoader
 import os
@@ -29,7 +29,7 @@ def get_gd_directory(
     """Return the directory in which the results should be saved."""
     results_dir = os.environ["RESULTS"]
     directory = f"{results_dir}/{dataset}/{arch_id}/seed_{seed}/{loss}/{opt}/"
-    if opt in ["gd", "rprop", "edge", "adam"]:
+    if opt in ["gd", "rprop", "edge", "adam", "rmsprop"]:
         return f"{directory}/lr_{lr}"
     elif opt == "polyak" or opt == "nesterov":
         return f"{directory}/lr_{lr}_beta_{beta}"
@@ -62,6 +62,8 @@ def get_gd_optimizer(parameters, opt: str, lr: float, momentum: float) -> Optimi
         return Edge(parameters, lr=lr)
     elif opt == "adam":
         return Adam(parameters, lr=lr)
+    elif opt == "rmsprop":
+        return RMSprop(parameters, lr=lr)
     else:
         raise ValueError(f"Unknown optimizer {opt}")
 
