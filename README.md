@@ -18,6 +18,14 @@ To run the code, you need to set two environment variables:
 2. Set the `RESULTS` environment variable to a directory where results will be stored.
  For example: `export RESULTS="/my/directory/results"`.
 
+If you are working in a Python virtual environment then you can configure it
+as follows (Python3 version should be >= 3.8):
+
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install torch torchvision torchaudio
+    pip install scipy
+
 ### Quick start
 
 Let's walk through how to use `gd.py` and `flow.py`.
